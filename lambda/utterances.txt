@@ -1,0 +1,13 @@
+TwoActors what movie has {ActorOne} and {ActorTwo}
+TwoActors what movie has both {ActorOne} and {ActorTwo}
+TwoActors what movie stars {ActorOne} and {ActorTwo}
+TwoActors what movie stars both {ActorOne} and {ActorTwo}
+TwoActors what movie starred {ActorOne} and {ActorTwo}
+TwoActors what movie starred both {ActorOne} and {ActorTwo}
+TwoActors what movie features {ActorOne} and {ActorTwo}
+TwoActors what movie features both {ActorOne} and {ActorTwo}
+TwoActors what movie featured {ActorOne} and {ActorTwo}
+TwoActors what movie featured both {ActorOne} and {ActorTwo}
+
+DirectedBy what movie was directed by {Director}
+DirectedBy what movies were directed by {Director}

@@ -1,0 +1,26 @@
+{
+  "intents": [
+    {
+      "intent": "TwoActors",
+      "slots": [
+        {
+          "name": "ActorOne",
+          "type": "ACTORNAME"
+        },
+        {
+          "name": "ActorTwo",
+          "type": "ACTORNAME"
+        }
+      ]
+    },
+    {
+      "intent": "DirectedBy",
+      "slots": [
+        {
+          "name": "Director",
+          "type": "ACTORNAME"
+        }
+      ]
+    }
+  ]
+}

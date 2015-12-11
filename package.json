@@ -1,0 +1,54 @@
+{
+  "name": "filmbuff",
+  "version": "1.0.0",
+  "description": "FilmBuff is an Amazon Alexa service that answers questions about movies. Code sections are database download, graph construction, voice type and intent generation, and the actual AWS Lambda service code.",
+  "main": "src/generate.js",
+  "engines": {
+    "node": "4.*",
+    "npm": "2.*"
+  },
+  "scripts": {
+    "generate": "node src/generate",
+    "test": "mocha",
+    "lint": "jslint lambda/*.js src/*.js test/*.js",
+    "package": "mkdir dist 2>/dev/null ; cd lambda ; zip --filesync -r ../dist/lambda.zip *"
+  },
+  "jshintConfig": {
+    "node": true,
+    "esversion": 5,
+    "multistr": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esorf/FilmBuff.git"
+  },
+  "keywords": [
+    "movie",
+    "film",
+    "answers",
+    "alexa",
+    "echo"
+  ],
+  "author": "Frank Leon Rose",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/esorf/FilmBuff/issues"
+  },
+  "homepage": "https://github.com/esorf/FilmBuff#readme",
+  "dependencies": {
+    "async": "^1.5.0",
+    "immutable": "^3.7.5",
+    "jsedn": "^0.3.5",
+    "jslint": "^0.9.5",
+    "jsonfile": "^2.2.3",
+    "mkdirp": "^0.5.1",
+    "semaphore": "^1.0.3",
+    "should": "^8.0.0",
+    "sprintf": "^0.1.5",
+    "underscore": "*",
+    "xhr2": "^0.1.3"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  }
+}

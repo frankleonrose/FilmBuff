@@ -1,17 +1,17 @@
 {
   "name": "filmbuff",
   "version": "1.0.0",
-  "description": "FilmBuff is an Amazon Alexa service that answers questions about movies. Code sections are database download, graph construction, voice type and intent generation, and the actual AWS Lambda service code.",
+  "description": "FilmBuff is an Amazon Alexa skill hosted on AWS Lambda that answers questions about movies.",
   "main": "src/generate.js",
   "engines": {
     "node": "4.*",
     "npm": "2.*"
   },
   "scripts": {
-    "generate": "node src/generate",
+    "generate": "node src/scripts/generate",
     "test": "mocha",
-    "lint": "jslint lambda/*.js src/*.js test/*.js",
-    "package": "mkdir dist 2>/dev/null ; cd lambda ; zip --filesync -r ../dist/lambda.zip *"
+    "lint": "jslint src/*.js src/scripts/*.js test/*.js",
+    "package": "mkdir -p dist/lambda/node_modules 2>/dev/null ; cp -r src/*.js src/generated dist/lambda; cd node_modules; cp -r aws-sdk bluebird immutable jsonfile ../dist/lambda/node_modules; cd ../dist/lambda ; zip --filesync -r ../lambda.zip *"
   },
   "jshintConfig": {
     "node": true,

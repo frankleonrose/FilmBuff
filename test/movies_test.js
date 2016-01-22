@@ -1,6 +1,6 @@
 var assert = require('assert');
 var should = require('should');
-var movies = require('../lambda/movies')
+var movies = require('../src/movies')
 
 describe('Movies', function() {
   describe('lookupPersonID', function () {

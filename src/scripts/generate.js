@@ -106,7 +106,7 @@ function forEachJsonInPath(path, fn, cb) {
       //console.log(file);
       var op = "reading"
       try {
-        var obj = require('../' + path + '/' + file);
+        var obj = require('../../' + path + '/' + file);
         //console.log(obj);
         op = "processing"
         fn(obj, fcb);
@@ -247,7 +247,7 @@ function main() {
     function (scb) {
       console.log("Movies: " + movies.size);
       console.log("People: " + people.size);
-      var path = 'lambda/generated/'
+      var path = 'src/generated/'
       var peopleByName = people.map(fix_name).map(function(name) { return name.toLowerCase(); }).flip()
       var files = {
         movies, people, actorMovies, directorMovies, peopleByName
@@ -261,7 +261,7 @@ function main() {
     ,
     function (scb) {
       console.log("Generating name list");
-      var path = 'lambda/generated/'
+      var path = 'src/generated/'
       withPath(path, function (err) {
         if (err) {
           console.error("Error making credit path")
@@ -315,12 +315,6 @@ main();
 // }
 
 single_request = {
-  'api_key': 'cbaac13a0ab933c04725e8b77f160308',
+  'api_key': API_KEY,
   'id': 45269,
 };
-// theMovieDb.movies.getCredits(single_request, function (data) {
-//   console.log(data);
-// }, function(err) {
-//   console.error(err);
-// });
-

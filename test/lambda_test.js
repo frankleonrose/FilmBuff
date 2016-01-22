@@ -1,6 +1,6 @@
 var should = require('should');
 var Immutable = require('immutable')
-var lambda = require('../lambda/lambda')
+var lambda = require('../src/lambda')
 
 var UMA_ID = '/nuwf9rzGlmKjVUMVi8B9pT1h06F.jpg'
 var JOHN_ID = '/ns8uZHEHzV18ifqA9secv8c2Ard.jpg'

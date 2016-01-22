@@ -37,10 +37,10 @@
   "homepage": "https://github.com/esorf/FilmBuff#readme",
   "dependencies": {
     "aws-sdk": "*",
+    "bluebird": "*",
     "async": "^1.5.0",
     "immutable": "^3.7.5",
     "jsedn": "^0.3.5",
-    "jslint": "^0.9.5",
     "jsonfile": "^2.2.3",
     "mkdirp": "^0.5.1",
     "semaphore": "^1.0.3",
@@ -50,6 +50,7 @@
     "xhr2": "^0.1.3"
   },
   "devDependencies": {
+    "jslint": "^0.9.5",
     "mocha": "*"
   }
 }

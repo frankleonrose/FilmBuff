@@ -1,11 +1,12 @@
 'use strict';
+/*jslint white: true */
 var Immutable = require('immutable');
 
-var actorMovies = require('./generated/actorMovies.json')
-var directorMovies = require('./generated/directorMovies.json')
-var movies_db = require('./generated/movies.json')
-var people = require('./generated/people.json')
-var peopleByName = require('./generated/peopleByName.json')
+var actorMovies = require('./generated/actorMovies.json');
+var directorMovies = require('./generated/directorMovies.json');
+var movies_db = require('./generated/movies.json');
+var people = require('./generated/people.json');
+var peopleByName = require('./generated/peopleByName.json');
 
 function lookupPersonID(name) {
   if (name) {
@@ -42,8 +43,8 @@ function findCommonMovies(id1, id2) {
 }
 
 module.exports = {
-  lookupPersonID,
-  getPersonName,
-  findCommonMovies,
-  getMovieTitle
-}
+  lookupPersonID: lookupPersonID,
+  getPersonName: getPersonName,
+  findCommonMovies: findCommonMovies,
+  getMovieTitle: getMovieTitle
+};

@@ -5,75 +5,75 @@ var lambda = require('../src/lambda')
 var UMA_ID = '/nuwf9rzGlmKjVUMVi8B9pT1h06F.jpg'
 var JOHN_ID = '/ns8uZHEHzV18ifqA9secv8c2Ard.jpg'
 
-describe('deciders', function() {
-  describe('main decide', function () {
+describe('planners', function() {
+  describe('main plan', function () {
     it('should respond to launch with welcome', function () {
-      plan = lambda.test.decide(Immutable.Map(), {name: "INTERNAL.Launch"})
-      plan.should.eql(["say_welcome", "prompt_two", "forget_actor"]);
+      thePlan = lambda.test.plan(Immutable.Map(), {name: "INTERNAL.Launch"})
+      thePlan.should.eql(["say_welcome", "prompt_two", "forget_actor"]);
     });
     it('should respond to session ended', function () {
-      plan = lambda.test.decide(Immutable.Map(), {name: "INTERNAL.Ended"})
-      plan.should.eql(["end_session"]);
+      thePlan = lambda.test.plan(Immutable.Map(), {name: "INTERNAL.Ended"})
+      thePlan.should.eql(["end_session"]);
     });
     it('should respond to help with help text', function () {
-      plan = lambda.test.decide(Immutable.Map(), {name: "AMAZON.HelpIntent"})
-      plan.should.eql(["say_help"]);
+      thePlan = lambda.test.plan(Immutable.Map(), {name: "AMAZON.HelpIntent"})
+      thePlan.should.eql(["say_help"]);
     });
   });
   
-  describe('decideOneActor', function () {
+  describe('planOneActor', function () {
     it('should fail when unknown actor', function () {
-      plan = lambda.test.decideOneActor(Immutable.Map(), 'Emily Litella')
-      plan.should.eql(["unknown_actor", 'prompt_two']);
+      thePlan = lambda.test.planOneActor(Immutable.Map(), 'Emily Litella')
+      thePlan.should.eql(["unknown_actor", 'prompt_two']);
     });
     it('should prompt for second when unknown actor but one stored', function () {
-      plan = lambda.test.decideOneActor(Immutable.Map({actor: UMA_ID}), 'Emily Litella')
-      plan.should.eql(["unknown_actor", ['prompt_second', UMA_ID]]);
+      thePlan = lambda.test.planOneActor(Immutable.Map({actor: UMA_ID}), 'Emily Litella')
+      thePlan.should.eql(["unknown_actor", ['prompt_second', UMA_ID]]);
     });
     it('should prompt for other actor after recognizing one', function () {
-      plan = lambda.test.decideOneActor(Immutable.Map(), 'Uma Thurman')
-      plan.should.eql([['prompt_second', UMA_ID]]);
+      thePlan = lambda.test.planOneActor(Immutable.Map(), 'Uma Thurman')
+      thePlan.should.eql([['prompt_second', UMA_ID]]);
     });
     it('should succeed with known and one stored', function () {
-      plan = lambda.test.decideOneActor(Immutable.Map({actor: UMA_ID}), 'John Travolta')
-      plan.should.eql([
+      thePlan = lambda.test.planOneActor(Immutable.Map({actor: UMA_ID}), 'John Travolta')
+      thePlan.should.eql([
         ['store_question', UMA_ID, JOHN_ID],
         ['answer_movies', 680], 'end_session']);
     });
   });
   
-  describe('decideTwoActors', function () {
+  describe('planTwoActors', function () {
     it('should fail when unknown actors', function () {
-      plan = lambda.test.decideTwoActors('Murray Hill', 'Emily Litella')
-      plan.should.eql(['neither_known', 'prompt_two']);
+      thePlan = lambda.test.planTwoActors('Murray Hill', 'Emily Litella')
+      thePlan.should.eql(['neither_known', 'prompt_two']);
     });
     it('should prompt for unrecognized one of two actors', function () {
-      plan = lambda.test.decideTwoActors('Murray Hill', 'Uma Thurman')
-      plan.should.eql([
+      thePlan = lambda.test.planTwoActors('Murray Hill', 'Uma Thurman')
+      thePlan.should.eql([
         ['did_not_catch', 1],
         ['prompt_second', UMA_ID]]);
     });
     it('should prompt for unrecognized one of two actors', function () {
-      plan = lambda.test.decideTwoActors('John Travolta', 'Emily Litella')
-      plan.should.eql([
+      thePlan = lambda.test.planTwoActors('John Travolta', 'Emily Litella')
+      thePlan.should.eql([
         ['did_not_catch', 2],
         ['prompt_second', JOHN_ID]]);
     });
     it('should succeed when known actors', function () {
-      plan = lambda.test.decideTwoActors('John Travolta', 'Uma Thurman')
-      plan.should.eql([
+      thePlan = lambda.test.planTwoActors('John Travolta', 'Uma Thurman')
+      thePlan.should.eql([
         ['store_question', JOHN_ID, UMA_ID],
         ['answer_movies', 680], 'end_session']);
     });
     it('should succeed when known actors reversed', function () {
-      plan = lambda.test.decideTwoActors('Uma Thurman', 'John Travolta')
-      plan.should.eql([
+      thePlan = lambda.test.planTwoActors('Uma Thurman', 'John Travolta')
+      thePlan.should.eql([
         ['store_question', UMA_ID, JOHN_ID],
         ['answer_movies', 680], 'end_session']);
     });
     it('should succeed when known actors lower case', function () {
-      plan = lambda.test.decideTwoActors('uma thurman', 'john travolta')
-      plan.should.eql([
+      thePlan = lambda.test.planTwoActors('uma thurman', 'john travolta')
+      thePlan.should.eql([
         ['store_question', UMA_ID, JOHN_ID],
         ['answer_movies', 680], 'end_session']);
     });

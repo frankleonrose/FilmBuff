@@ -111,7 +111,7 @@ function recover(session, loader, defaultState) {
 
 // --------------- Deciders -----------------------
 
-function decideTwoActorsById(id1, id2) {
+function planTwoActorsById(id1, id2) {
   if (!id1 && !id2) {
     return ["neither_known", "prompt_two"];
   }
@@ -134,13 +134,13 @@ function decideTwoActorsById(id1, id2) {
   }
 }
 
-function decideTwoActors(actor1, actor2) {
+function planTwoActors(actor1, actor2) {
   var id1 = movies.lookupPersonID(actor1);
   var id2 = movies.lookupPersonID(actor2);
-  return decideTwoActorsById(id1, id2);
+  return planTwoActorsById(id1, id2);
 }
 
-function decideOneActor(state, actor1) {
+function planOneActor(state, actor1) {
   var id1 = movies.lookupPersonID(actor1);
   
   if (!id1) {
@@ -150,7 +150,7 @@ function decideOneActor(state, actor1) {
   else {
     if (state.has("actor")) {
       var id0 = state.get("actor");
-      return decideTwoActorsById(id0, id1);
+      return planTwoActorsById(id0, id1);
     }
     else {
       return [["prompt_second", id1]];
@@ -158,7 +158,7 @@ function decideOneActor(state, actor1) {
   }
 }
 
-function decide(state, intent) {
+function plan(state, intent) {
   // Note: state.stored will be set to a Date if we just recovered from storage.
   // TODO: Maybe it was within 5 minutes and we should resume some operation.
   // TODO: Or it was from a few weeks ago and we want to give a big welcome back.
@@ -172,12 +172,12 @@ function decide(state, intent) {
 
     case "OneActor":
       var actor1 = intent.slots.ActorOne.value;
-      return decideOneActor(state, actor1);
+      return planOneActor(state, actor1);
 
     case "TwoActors":
       var actor1 = intent.slots.ActorOne.value;
       var actor2 = intent.slots.ActorTwo.value;
-      return decideTwoActors(actor1, actor2);
+      return planTwoActors(actor1, actor2);
 
     case "AMAZON.HelpIntent":
       return ["say_help"];
@@ -198,10 +198,10 @@ function getOpcode(op) {
   }
 }
 
-function update(state, plan) {
+function update(state, thePlan) {
   console.assert(state /*instanceof Immutable.Map*/, "update takes a state Map");
-  console.assert(plan instanceof Array, "update takes a plan Array");
-  return plan.reduce(function (s, op) {
+  console.assert(thePlan instanceof Array, "update takes a plan Array");
+  return thePlan.reduce(function (s, op) {
     var opcode = getOpcode(op);
     switch (opcode) {
       case "prompt_second":
@@ -218,7 +218,7 @@ function update(state, plan) {
         s = s.delete("actor");
         break;
       default:
-        // Do nothing. Most plan ops don't affect state
+        // Do nothing. Most thePlan ops don't affect state
         break;
     }
     return s;
@@ -288,8 +288,8 @@ function getMoviesSpeech(movieIds) {
   };
 }
 
-function speak(plan) {
-  return plan.reduce(function (speech, op) {
+function speak(thePlan) {
+  return thePlan.reduce(function (speech, op) {
     var opcode = getOpcode(op);
     var sp = null;
     switch (opcode) {
@@ -328,7 +328,7 @@ function speak(plan) {
         sp = {shouldEndSession: true};
         break;
       default:
-        // Do nothing. Often plan ops don't produce output.
+        // Do nothing. Often thePlan ops don't produce output.
     }
     if (sp) {
       speech = combineSpeech(speech, sp);
@@ -360,9 +360,9 @@ exports.handler = function (event, context, storage) {
       .then( function (jsstate) {
         var state = Immutable.fromJS(jsstate);
 
-        var plan = decide(state, intent);
-        state = update(state, plan);
-        var speech = speak(plan);
+        var thePlan = plan(state, intent);
+        state = update(state, thePlan);
+        var speech = speak(thePlan);
       
         var finish = function () {
           state = state.delete("stored"); // Stored should not come back in session
@@ -391,11 +391,11 @@ exports.handler = function (event, context, storage) {
 };
 
 module.exports.test = {
-  decide: decide,
+  plan: plan,
   update: update,
   speak: speak,
-  decideOneActor: decideOneActor,
-  decideTwoActors: decideTwoActors,
+  planOneActor: planOneActor,
+  planTwoActors: planTwoActors,
   combineSpeech: combineSpeech,
   getWelcomeSpeech: getWelcomeSpeech,
   getHelpSpeech: getHelpSpeech,

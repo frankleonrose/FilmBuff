@@ -261,10 +261,10 @@ function main() {
     ,
     function (scb) {
       console.log("Generating name list");
-      var path = 'src/generated/'
+      var path = 'speechAssets/customSlotTypes/'
       withPath(path, function (err) {
         if (err) {
-          console.error("Error making credit path")
+          console.error("Error making speechAssets path")
           return cb(err);
         }
         var peopleMovies = directorMovies.reduce(function (r, v, k) {
@@ -283,7 +283,7 @@ function main() {
           else {
             return r;
           }}, "")
-        fs.writeFile(path + "name.list", text_names, scb);
+        fs.writeFile(path + "ACTORNAME", text_names, scb);
       });
     }
   ],

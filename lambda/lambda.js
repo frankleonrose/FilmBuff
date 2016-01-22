@@ -13,24 +13,32 @@ var movies = require('./movies');
 // --------------- Helpers that build all of the responses -----------------------
 
 function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
-    return {
-        outputSpeech: {
-            type: "PlainText",
-            text: output
-        },
-        card: {
-            type: "Simple",
-            title: "SessionSpeechlet - " + title,
-            content: "SessionSpeechlet - " + output
-        },
-        reprompt: {
-            outputSpeech: {
-                type: "PlainText",
-                text: repromptText
-            }
-        },
-        shouldEndSession: shouldEndSession
+  var speechlet = {
+    outputSpeech: {
+      type: "PlainText",
+      text: output
+    },
+    shouldEndSession: shouldEndSession
+  };
+  
+  if (repromptText) {
+    speechlet.reprompt = {
+      outputSpeech: {
+        type: "PlainText",
+        text: repromptText
+      }
     };
+  }
+  
+  if (title) {
+    speechlet.card = {
+      type: "Simple",
+      title: title,
+      content: output
+    };
+  }
+  
+  return speechlet;
 }
 
 function buildResponse(sessionAttributes, speechletResponse) {
@@ -83,6 +91,8 @@ var productionStorage = {
 };
 
 function recover(session, loader, defaultState) {
+  console.assert(session, "recover requires a session")
+  console.assert(defaultState, "recover requires a defaultState")
   if (session.new) {
     return loader(session.user.userId).catch( function (err) {
       console.error("Failed to load state for user ID: '" + session.user.userId + "'");
@@ -91,7 +101,11 @@ function recover(session, loader, defaultState) {
     });
   }
   else {
-    return Promise.resolve(session.sessionAttributes);
+    var state = session.attributes;
+    if (!state) {
+      state = defaultState;
+    }
+    return Promise.resolve(state);
   }
 }
 
@@ -185,6 +199,8 @@ function getOpcode(op) {
 }
 
 function update(state, plan) {
+  console.assert(state /*instanceof Immutable.Map*/, "update takes a state Map");
+  console.assert(plan instanceof Array, "update takes a plan Array");
   return plan.reduce(function (s, op) {
     var opcode = getOpcode(op);
     switch (opcode) {
@@ -192,7 +208,10 @@ function update(state, plan) {
         s = s.set("actor", op[1]);
         break;
       case "store_question":
-        s = s.update("history", [], function (h) {h = h.slice(0); h.push([op[1], op[2]]); return h;});
+        s = s.update("history", Immutable.List(), function (h) {
+          h = h.push(Immutable.List.of(op[1], op[2]));
+          return h;
+        });
         break;
       case "forget_actor":
       case "end_session":
@@ -200,6 +219,7 @@ function update(state, plan) {
         break;
       default:
         // Do nothing. Most plan ops don't affect state
+        break;
     }
     return s;
   }, state);
@@ -305,6 +325,8 @@ function speak(plan) {
         sp = {output: movies.getPersonName(op[1]) + " and who else?"};
         break;
       case "end_session":
+        sp = {shouldEndSession: true};
+        break;
       default:
         // Do nothing. Often plan ops don't produce output.
     }
@@ -336,31 +358,32 @@ exports.handler = function (event, context, storage) {
     var defaultState = {created: new Date()};
     recover(event.session, storage.load, defaultState)
       .then( function (jsstate) {
-          var state = Immutable.fromJS(jsstate);
-        
-          var plan = decide(state, intent);
-          state = update(state, plan);
-          var speechlet = speak(plan);
-        
-          var finish = function () {
-            state = state.delete("stored"); // Stored should not come back in session
-            context.succeed(buildResponse(state.toJS(), speechlet));
-          };
-          if (speechlet.shouldEndSession && storage.store) {
-            state = state.set("stored", new Date()); // Record when stored
-            storage.store(event.session.user.userId, state.toJS()).then(finish).catch( function (err) {
-              console.error("Failed to store state for id: '" + event.session.user.userId + "'.");
-              console.error(err);
-              finish(); // Log error, but don't change output.
-            });
-          }
-          else {
-            finish();
-          }
-        })
-      .catch( function (err) {
-        context.fail("Exception: " + err);
-      });
+        var state = Immutable.fromJS(jsstate);
+
+        var plan = decide(state, intent);
+        state = update(state, plan);
+        var speech = speak(plan);
+      
+        var finish = function () {
+          state = state.delete("stored"); // Stored should not come back in session
+          var speechlet = buildSpeechletResponse(speech.title, speech.output, speech.reprompt, speech.shouldEndSession);
+          context.succeed(buildResponse(state.toJS(), speechlet));
+        };
+        if (speech.shouldEndSession && storage.store) {
+          state = state.set("stored", new Date()); // Record when stored
+          storage.store(event.session.user.userId, state.toJS()).then(finish).catch( function (err) {
+            console.error("Failed to store state for id: '" + event.session.user.userId + "'.");
+            console.error(err);
+            finish(); // Log error, but don't change output.
+          });
+        }
+        else {
+          finish();
+        }
+      })
+    .catch( function (err) {
+      context.fail("Exception: " + err);
+    });
   }
   catch (e) {
       context.fail("Exception: " + e);

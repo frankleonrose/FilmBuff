@@ -91,11 +91,16 @@ describe('update', function () {
   });
   it('should store question to empty history', function () {
     state = lambda.test.update(Immutable.Map(), 
-      [['store_question', UMA_ID, JOHN_ID]])
+      [['store_question', UMA_ID, JOHN_ID], "end_session"])
     state.toJS().should.eql({history: [[UMA_ID, JOHN_ID]]});
   });
+  it('should store question to populated history', function () {
+    state = lambda.test.update(Immutable.Map({history: Immutable.List([Immutable.List([UMA_ID, JOHN_ID])])}), 
+      [['store_question', UMA_ID + "x", JOHN_ID + "x"], "end_session"])
+    state.toJS().should.eql({history: [[UMA_ID, JOHN_ID], [UMA_ID + "x", JOHN_ID + "x"]]});
+  });
   it('should not change state with most plans', function () {
-    state = lambda.test.update(Immutable.Map({actor: UMA_ID, history: []}), 
+    state = lambda.test.update(Immutable.Map({actor: UMA_ID, history: Immutable.List()}), 
       ["say_welcome", "say_help", "answer_movies", "neither_known", "unknown_actor", "did_not_catch",
        "unknown_movie", "same_actor", "prompt_two"])
     state.toJS().should.eql({actor: UMA_ID, history: []});
@@ -103,6 +108,10 @@ describe('update', function () {
 });
  
 describe('speak', function () {
+  it('should end on end_session', function () {
+    speechlet = lambda.test.speak(['end_session']);
+    speechlet.shouldEndSession.should.eql(true);
+  });
   it('should produce welcome speech', function () {
     speechlet = lambda.test.speak(['say_welcome'])
     speechlet.output.should.eql(lambda.test.getWelcomeSpeech().output);

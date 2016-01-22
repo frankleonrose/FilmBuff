@@ -288,48 +288,41 @@ function getMoviesSpeech(movieIds) {
   };
 }
 
+function speakOp(op) {
+  var opcode = getOpcode(op);
+  switch (opcode) {
+    case "say_welcome":
+      return getWelcomeSpeech();
+    case "say_help":
+      return getHelpSpeech();
+    case "answer_movies":
+      return getMoviesSpeech(op.slice(1));
+    case "neither_known":
+      return {output: "I don't recognize either of those actors."};
+    case "unknown_actor":
+      return {output: "I don't recognize that actor."};
+    case "did_not_catch":
+      var which = op[1]===1 ? "first" : "second";
+      return {output: "I don't recognize that " + which + " actor."};
+    case "unknown_movie":
+      return {output: "I don't know a movie they were both in."};
+    case "same_actor":
+      return {output: "That's the same actor twice."};
+    case "prompt_two":
+      return {output: "Ask what films two actors were in."};
+    case "prompt_second":
+      return {output: movies.getPersonName(op[1]) + " and who else?"};
+    case "end_session":
+      return {shouldEndSession: true};
+    default:
+      // Do nothing. Often thePlan ops don't produce output.
+      return null;
+  }
+}
+
 function speak(thePlan) {
   return thePlan.reduce(function (speech, op) {
-    var opcode = getOpcode(op);
-    var sp = null;
-    switch (opcode) {
-      case "say_welcome":
-        sp = getWelcomeSpeech();
-        break;
-      case "say_help":
-        sp = getHelpSpeech();
-        break;
-      case "answer_movies":
-        sp = getMoviesSpeech(op.slice(1));
-        break;
-      case "neither_known":
-        sp = {output: "I don't recognize either of those actors."};
-        break;
-      case "unknown_actor":
-        sp = {output: "I don't recognize that actor."};
-        break;
-      case "did_not_catch":
-        var which = op[1]===1 ? "first" : "second";
-        sp = {output: "I don't recognize that " + which + " actor."};
-        break;
-      case "unknown_movie":
-        sp = {output: "I don't know a movie they were both in."};
-        break;
-      case "same_actor":
-        sp = {output: "That's the same actor twice."};
-        break;
-      case "prompt_two":
-        sp = {output: "Ask what films two actors were in."};
-        break;
-      case "prompt_second":
-        sp = {output: movies.getPersonName(op[1]) + " and who else?"};
-        break;
-      case "end_session":
-        sp = {shouldEndSession: true};
-        break;
-      default:
-        // Do nothing. Often thePlan ops don't produce output.
-    }
+    var sp = speakOp(op);
     if (sp) {
       speech = combineSpeech(speech, sp);
     }

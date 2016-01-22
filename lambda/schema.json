@@ -1,6 +1,15 @@
 {
   "intents": [
     {
+      "intent": "OneActor",
+      "slots": [
+        {
+          "name": "ActorOne",
+          "type": "ACTORNAME"
+        }
+      ]
+    },
+    {
       "intent": "TwoActors",
       "slots": [
         {
@@ -14,13 +23,7 @@
       ]
     },
     {
-      "intent": "DirectedBy",
-      "slots": [
-        {
-          "name": "Director",
-          "type": "ACTORNAME"
-        }
-      ]
+      "intent": "AMAZON.HelpIntent"
     }
   ]
 }

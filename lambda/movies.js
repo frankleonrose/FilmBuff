@@ -17,6 +17,10 @@ function lookupPersonID(name) {
   return null;
 }
 
+function getPersonName(person_id) {
+  return people[person_id];
+}
+
 function getMovieTitle(movie_id) {
   return movies_db[movie_id].title;
 }
@@ -37,6 +41,9 @@ function findCommonMovies(id1, id2) {
   return movies.toJS();
 }
 
-exports.lookupPersonID = lookupPersonID;
-exports.findCommonMovies = findCommonMovies;
-exports.getMovieTitle = getMovieTitle;
+module.exports = {
+  lookupPersonID,
+  getPersonName,
+  findCommonMovies,
+  getMovieTitle
+}

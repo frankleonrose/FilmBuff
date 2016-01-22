@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/esorf/FilmBuff#readme",
   "dependencies": {
+    "aws-sdk": "*",
     "async": "^1.5.0",
     "immutable": "^3.7.5",
     "jsedn": "^0.3.5",

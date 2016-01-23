@@ -12,6 +12,9 @@ Among other things I learned:
  - Javascript is not great for the kind of scripting I did in generate.js. I should have used Python or at least stuck to Sync functions only.
  - Never embed an API key into code, even when you're just doing something quickly to start. You're going to forget it is there and commit and then it's out there.
  
+## Rewrite
+I revamped this sample to demonstrate my take on the architecture of an Alexa app. See [Alexa Skill Architecture](http://futurose.com/coding/2016/01/22/alexa-skill-architecture.html) post.
+ 
 ## How To
  - npm run generate - Downloads movie information from TMDB.org and creates database files and a name.list file to define Alexa skill's ACTOR_NAME type.
  - npm run test - Tests some basic functions.
